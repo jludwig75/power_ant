@@ -2,6 +2,7 @@
 
 #include "ant_page.h"
 
+#include <algorithm>
 #include <memory>
 
 
@@ -43,5 +44,28 @@ struct SpeedAndCadencePage : public AntCommonPage
             ", spd rev count=" << speed_revolutution_count();
 
         return ss.str();// + " - " + AntCommonPage::dump();
+    }
+
+    void populate_data_point(const std::vector<SensorDataPoint::FieldType>& requested_fields, SensorDataPoint& data_point) override
+    {
+        if (std::find(requested_fields.begin(), requested_fields.end(), SensorDataPoint::FieldType::CrankRevolutionCount) != requested_fields.end())
+        {
+            data_point.store_value(SensorDataPoint::FieldType::CrankRevolutionCount, cadence_revolution_count());
+        }
+
+        if (std::find(requested_fields.begin(), requested_fields.end(), SensorDataPoint::FieldType::CrankRevolutionEvtTime) != requested_fields.end())
+        {
+            data_point.store_value(SensorDataPoint::FieldType::CrankRevolutionEvtTime, cadence_event_time());
+        }
+
+        if (std::find(requested_fields.begin(), requested_fields.end(), SensorDataPoint::FieldType::WheelRevolutionCount) != requested_fields.end())
+        {
+            data_point.store_value(SensorDataPoint::FieldType::WheelRevolutionCount, speed_revolutution_count());
+        }
+
+        if (std::find(requested_fields.begin(), requested_fields.end(), SensorDataPoint::FieldType::WheelRevolutionEventTime) != requested_fields.end())
+        {
+            data_point.store_value(SensorDataPoint::FieldType::WheelRevolutionEventTime, speed_event_time());
+        }
     }
 };

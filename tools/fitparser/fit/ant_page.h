@@ -5,6 +5,9 @@
 #include <cstdint>
 #include <iomanip>
 #include <sstream>
+#include <vector>
+
+#include "sensor_data_point.h"
 
 
 struct AntCommonPage
@@ -36,6 +39,11 @@ struct AntCommonPage
         }
 
         return ss.str();
+    }
+
+    virtual void populate_data_point(const std::vector<SensorDataPoint::FieldType>& requested_fields, SensorDataPoint& data_point)
+    {
+        // Nothing to populate
     }
 };
 

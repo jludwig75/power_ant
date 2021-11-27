@@ -38,7 +38,7 @@ public:
         private:
             std::string _error_message;
     };
-    bool read_page(uint64_t timestamp_ms, SensorType& sensor_type, PageData& page);
+    bool read_page(uint64_t& timestamp_ms, SensorType& sensor_type, PageData& page);
 private:
     std::unique_ptr<std::ifstream> _file;
 };

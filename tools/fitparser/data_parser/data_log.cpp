@@ -21,7 +21,7 @@ DataLog::DataLog(const std::string& file_name)
     }
 }
 
-bool DataLog::read_page(uint64_t timestamp_ms, SensorType& sensor_type, PageData& page)
+bool DataLog::read_page(uint64_t& timestamp_ms, SensorType& sensor_type, PageData& page)
 {
     DataLogEntry entry;
     _file->read(reinterpret_cast<char *>(&entry), sizeof(entry));
