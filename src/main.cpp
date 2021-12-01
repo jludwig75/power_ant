@@ -101,12 +101,17 @@ public:
 
         auto revolution_count = local_interrupt_data.revolution_count - _last__interrupt_data.revolution_count;
         auto elapsed_time = local_interrupt_data.event_time - _last__interrupt_data.event_time;
+        // Serial.printf("revs=%u, ms=%u\n", revolution_count, elapsed_time);
 
         auto revoltuions_per_second = static_cast<double>(1000 * revolution_count) / static_cast<double>(elapsed_time);
+        // Serial.printf("RPS=%.4f\n", revoltuions_per_second);
 
         _last__interrupt_data.interrupt_data = local_interrupt_data.interrupt_data;
 
-        return static_cast<uint16_t>(pow(0.0486 * revoltuions_per_second, 1.86));
+        auto power_watts = 0.0486 * pow(revoltuions_per_second, 1.86);
+        // Serial.printf("PWR=%.4f\n", power_watts);
+
+        return static_cast<uint16_t>(power_watts);
     }
 protected:
     static void pin_interrupt()
@@ -136,7 +141,6 @@ void setup() {
     digitalWrite(LED_BUILTIN, LOW);
     Serial.begin(BAUD_RATE);
     flash(2);
-    delay(500);
     Serial.println("Running");
 
     Bluefruit.begin();
