@@ -70,15 +70,21 @@ void parse_data_set(const std::string& data_log_file_name,
 {
     DataLog data_log(data_log_file_name);
     
+    uint64_t start_time{UINT64_MAX};
     uint64_t timestamp;
     DataLog::SensorType sensor_type;
     PageData ant_page;
     while (data_log.read_page(timestamp, sensor_type, ant_page))
     {
+        if (start_time == UINT64_MAX)
+        {
+            start_time = timestamp;
+        }
+        float time_sec = static_cast<float>(timestamp - start_time) / 1000.0;
         if (sensor_type == DataLog::SensorType::Power)
         {
             auto page = BicyclePowerPage::parse_page(ant_page);
-            // std::cout << page->dump() << "\n";
+            // std::cout << std::fixed << time_sec << ": " << page->dump() << "\n";
             SensorDataPoint data_point(timestamp);
             page->populate_data_point(requested_fields, data_point);
             if (!data_point.empty())
@@ -89,7 +95,7 @@ void parse_data_set(const std::string& data_log_file_name,
         else if (sensor_type == DataLog::SensorType::SpeedAndCadence)
         {
             auto page = SpeedAndCadencePage::parse_page(ant_page);
-            // std::cout << page->dump() << "\n";
+            // std::cout << std::fixed << time_sec << ": " << page->dump() << "\n";
             SensorDataPoint data_point(timestamp);
             page->populate_data_point(requested_fields, data_point);
             if (!data_point.empty())
@@ -104,10 +110,13 @@ void parse_data_set(const std::string& data_log_file_name,
 void dump_raw_fields(const std::string& data_log_file_name)
 {
     std::vector<SensorDataPoint> data_points;
-    std::vector<SensorDataPoint::FieldType> requested_fields = {SensorDataPoint::FieldType::WheelRevolutionEventTime,
-        SensorDataPoint::FieldType::WheelRevolutionCount,
-        SensorDataPoint::FieldType::UpdateEventCount,
-        SensorDataPoint::FieldType::InstantaneousPower};
+    std::vector<SensorDataPoint::FieldType> requested_fields = {
+            // SensorDataPoint::FieldType::WheelRevolutionEventTime,
+            // SensorDataPoint::FieldType::WheelRevolutionCount,
+            SensorDataPoint::FieldType::UpdateEventCount,
+            SensorDataPoint::FieldType::AccumulatedPower,
+            SensorDataPoint::FieldType::InstantaneousPower
+        };
     parse_data_set(data_log_file_name, requested_fields, data_points);
     dump_csv(std::cout, requested_fields, data_points);
 }
@@ -192,8 +201,8 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    // dump_raw_fields(argv[1]);
-    correlate_speed_and_power(argv[1]);
+    dump_raw_fields(argv[1]);
+    // correlate_speed_and_power(argv[1]);
 
 
     return 0;
