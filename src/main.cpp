@@ -19,7 +19,7 @@
 #define CHANNEL_0 0
 
 #define SENSOR_INTERRUPT_PIN    10
-#define BUTTON_PIN              7
+#define BUTTON_PIN              SW_PIN
 
 #define NORMAL_BLINK_INTERVAL_MS    2000
 #define DEMO_BLINK_INTERVAL_MS      200
@@ -146,7 +146,7 @@ private:
     mutable bool _handled_first_request = false;
 };
 
-bool simulate_wheel_interrupt = false;
+volatile bool simulate_wheel_interrupt = false;
 volatile uint32_t blink_interval_ms = NORMAL_BLINK_INTERVAL_MS;
 
 void button_interrupt()
@@ -167,8 +167,7 @@ void setup() {
     digitalWrite(LED_BUILTIN, LOW);
     Serial.begin(BAUD_RATE);
     delay(100);
-    Serial.println("Running ...");
-    flash(3, 200);
+    Serial.println("Starting...");
 
     Bluefruit.begin();
 
